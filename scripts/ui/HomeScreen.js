@@ -1,11 +1,9 @@
 class HomeScreen extends createjs.Container {
-  constructor(stageW, stageH, onPlay, onFirstInteraction) {
+  constructor(stageW, stageH, onPlay) {
     super();
     this._w = stageW;
     this._h = stageH;
     this._onPlay = onPlay;
-    this._onFirstInteraction = onFirstInteraction;
-    this._interacted = false;
     this._driftAsteroids = [];
 
     this._buildStarfield();
@@ -155,12 +153,6 @@ class HomeScreen extends createjs.Container {
     btn.addChild(txt);
 
     btn.cursor = 'pointer';
-    btn.on('mousedown', () => {
-      if (!this._interacted) {
-        this._interacted = true;
-        if (this._onFirstInteraction) this._onFirstInteraction();
-      }
-    });
     btn.on('mouseover', () => {
       createjs.Tween.get(btn).to({ scaleX: 1.05, scaleY: 1.05 }, 100);
       drawBg('#00ddff', this._lighten(fill, 25));

@@ -10,7 +10,7 @@ class Resource extends createjs.Container {
     this._baseX = Utils.rand(this.radius + 10, stageW - this.radius - 10);
     this.x = this._baseX;
     this.y = -this.radius - 10;
-    this.vy = Utils.rand(1.0, 2.2);
+    this.vy = Utils.rand(2.8, 4.5);
     this._buildShape();
   }
 

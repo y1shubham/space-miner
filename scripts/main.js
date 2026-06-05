@@ -35,12 +35,9 @@ createjs.Ticker.timingMode = createjs.Ticker.RAF;
 function showHome() {
   if (currentScreen && currentScreen.destroy) currentScreen.destroy();
   stage.removeAllChildren();
-  currentScreen = new HomeScreen(SW, SH, onPlay, () => {
-    // called by HomeScreen on first button interaction (user gesture)
-    AudioManager.wakeUp();
-    AudioManager.startMenuMusic();
-  });
+  currentScreen = new HomeScreen(SW, SH, onPlay);
   stage.addChild(currentScreen);
+  AudioManager.startMenuMusic();
 }
 
 function showGame() {

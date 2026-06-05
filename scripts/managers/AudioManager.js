@@ -4,11 +4,11 @@ const AudioManager = {
   _KEY: 'spaceminer_muted',
 
   // music state
-  _musicGain: null,
-  _musicDroneNodes: [],
-  _musicTimer: null,
-  _musicMode: null,   // 'menu' | 'game' | null
-  _arpStep: 0,
+  _menuAudio: null,
+  _gameAudio: null,
+  _musicMode: null,
+  _pendingMode: null,
+  _gestureListenerAdded: false,
 
   init() {
     try { this._muted = localStorage.getItem(this._KEY) === '1'; } catch(e) {}
@@ -16,9 +16,32 @@ const AudioManager = {
     try {
       this._ctx = new (window.AudioContext || window.webkitAudioContext)();
     } catch(e) {}
+    this._menuAudio = new Audio('assets/audio/menu_music.mp3');
+    this._menuAudio.loop   = true;
+    this._menuAudio.volume = 0.6;
+    this._menuAudio.muted  = this._muted;
+    this._gameAudio = new Audio('assets/audio/game_music.mp3');
+    this._gameAudio.loop   = true;
+    this._gameAudio.volume = 0.6;
+    this._gameAudio.muted  = this._muted;
   },
 
-  // call this synchronously inside a user-gesture handler
+  // attach a one-time any-gesture listener so music starts on first interaction
+  _waitForGesture(mode) {
+    this._pendingMode = mode;
+    if (this._gestureListenerAdded) return;
+    this._gestureListenerAdded = true;
+    const resume = () => {
+      ['click','touchstart','keydown'].forEach(e => document.removeEventListener(e, resume, true));
+      this._gestureListenerAdded = false;
+      const pending = this._pendingMode;
+      this._pendingMode = null;
+      if (pending === 'menu') this.startMenuMusic();
+      else if (pending === 'game') this.startGameMusic();
+    };
+    ['click','touchstart','keydown'].forEach(e => document.addEventListener(e, resume, { capture: true, once: true }));
+  },
+
   wakeUp() {
     if (this._ctx && this._ctx.state === 'suspended') this._ctx.resume();
   },
@@ -57,123 +80,34 @@ const AudioManager = {
   // ─── MUSIC ──────────────────────────────────────────────────────────────────
 
   startMenuMusic() {
-    if (!this._ctx || this._muted) return;
+    if (!this._menuAudio) return;
     if (this._musicMode === 'menu') return;
-    this._stopMusicNow();
-    this._musicMode = 'menu';
-    this._arpStep   = 0;
-    this._musicGain = this._ctx.createGain();
-    this._musicGain.gain.setValueAtTime(0.001, this._ctx.currentTime);
-    this._musicGain.gain.linearRampToValueAtTime(1.2, this._ctx.currentTime + 3);
-    this._musicGain.connect(this._ctx.destination);
-    this._startDroneLayers(0.15, 0.10);
-    this._scheduleArp('menu');
+    this._stopAudio();
+    this._musicMode   = 'menu';
+    this._pendingMode = null;
+    this._menuAudio.currentTime = 0;
+    this._menuAudio.play().catch(() => this._waitForGesture('menu'));
   },
 
   startGameMusic() {
-    if (!this._ctx || this._muted) return;
+    if (!this._gameAudio) return;
     if (this._musicMode === 'game') return;
-    this._stopMusicNow();
-    this._musicMode = 'game';
-    this._arpStep   = 0;
-    this._musicGain = this._ctx.createGain();
-    this._musicGain.gain.setValueAtTime(0.001, this._ctx.currentTime);
-    this._musicGain.gain.linearRampToValueAtTime(1.2, this._ctx.currentTime + 4);
-    this._musicGain.connect(this._ctx.destination);
-    this._startDroneLayers(0.15, 0.10);
-    this._scheduleArp('game');
+    this._stopAudio();
+    this._musicMode   = 'game';
+    this._pendingMode = null;
+    this._gameAudio.currentTime = 14;
+    this._gameAudio.play().catch(() => this._waitForGesture('game'));
+  },
+
+  _stopAudio() {
+    if (this._menuAudio) { this._menuAudio.pause(); this._menuAudio.currentTime = 0; }
+    if (this._gameAudio) { this._gameAudio.pause(); this._gameAudio.currentTime = 0; }
   },
 
   stopMusic() {
-    const mode = this._musicMode;
     this._musicMode = null;
-    if (!this._musicGain) return;
-    const t  = this._ctx.currentTime;
-    const mg = this._musicGain;
-    const nodes = this._musicDroneNodes.slice();
-    if (this._musicTimer) { clearTimeout(this._musicTimer); this._musicTimer = null; }
-    this._musicGain      = null;
-    this._musicDroneNodes = [];
-    mg.gain.cancelScheduledValues(t);
-    mg.gain.setValueAtTime(mg.gain.value, t);
-    mg.gain.linearRampToValueAtTime(0.001, t + 1.5);
-    setTimeout(() => {
-      nodes.forEach(n => { try { n.stop(); } catch(e) {} try { n.disconnect(); } catch(e) {} });
-      try { mg.disconnect(); } catch(e) {}
-    }, 1600);
-  },
-
-  // immediate stop (used before starting new music track)
-  _stopMusicNow() {
-    this._musicMode = null;
-    if (this._musicTimer) { clearTimeout(this._musicTimer); this._musicTimer = null; }
-    if (!this._musicGain) return;
-    const mg = this._musicGain;
-    const nodes = this._musicDroneNodes.slice();
-    this._musicGain       = null;
-    this._musicDroneNodes = [];
-    nodes.forEach(n => { try { n.stop(); } catch(e) {} try { n.disconnect(); } catch(e) {} });
-    try { mg.disconnect(); } catch(e) {}
-  },
-
-  _startDroneLayers(bassVol, padVol) {
-    // bass drone at 110Hz (A2) — audible on laptop/phone speakers
-    [110, 110.5, 109.6].forEach(f => {
-      const osc = this._ctx.createOscillator();
-      const g   = this._ctx.createGain();
-      osc.type  = 'sine'; osc.frequency.value = f; g.gain.value = bassVol;
-      osc.connect(g); g.connect(this._musicGain); osc.start();
-      this._musicDroneNodes.push(osc);
-    });
-    // chord pad — C3 minor (C, Eb, G, Bb) — 130–233Hz, clear on any speaker
-    [130.8, 155.6, 196.0, 233.1].forEach((f, i) => {
-      const osc  = this._ctx.createOscillator();
-      const g    = this._ctx.createGain();
-      const lfo  = this._ctx.createOscillator();
-      const lfoG = this._ctx.createGain();
-      osc.type = 'sine'; osc.frequency.value = f + i * 0.2; g.gain.value = padVol;
-      lfo.frequency.value = 0.15 + i * 0.03; lfoG.gain.value = 0.012;
-      lfo.connect(lfoG); lfoG.connect(g.gain);
-      lfo.start(); osc.start(); osc.connect(g); g.connect(this._musicGain);
-      this._musicDroneNodes.push(osc, lfo);
-    });
-  },
-
-  _scheduleArp(mode) {
-    if (this._musicMode !== mode || !this._musicGain) return;
-
-    const isGame  = mode === 'game';
-    // game: C minor pentatonic, faster
-    // menu: higher register, slower, more spacious
-    const scale   = isGame
-      ? [261.6, 311.1, 349.2, 392.0, 466.2, 523.2, 392.0, 311.1, 261.6, 349.2]
-      : [523.2, 622.3, 698.5, 784.0, 932.3, 1046.5, 784.0, 622.3];
-    const stepT   = isGame ? 0.42 : 0.9;
-    const noteVol = isGame ? 0.55 : 0.45;
-    const STEPS   = isGame ? 8 : 6;
-    const skip    = isGame ? new Set([2, 5]) : new Set([1, 4]);
-    const now     = this._ctx.currentTime;
-
-    for (let i = 0; i < STEPS; i++) {
-      if (skip.has(i)) continue;
-      const freq = scale[(this._arpStep + i) % scale.length];
-      const t    = now + i * stepT;
-      const osc  = this._ctx.createOscillator();
-      const env  = this._ctx.createGain();
-      osc.type   = isGame ? 'triangle' : 'sine';
-      osc.frequency.value = freq;
-      env.gain.setValueAtTime(0.001, t);
-      env.gain.linearRampToValueAtTime(noteVol, t + (isGame ? 0.03 : 0.08));
-      env.gain.exponentialRampToValueAtTime(0.001, t + stepT * (isGame ? 0.78 : 0.85));
-      osc.connect(env); env.connect(this._musicGain);
-      osc.start(t); osc.stop(t + stepT * 0.9);
-    }
-
-    this._arpStep = (this._arpStep + STEPS) % scale.length;
-    this._musicTimer = setTimeout(
-      () => this._scheduleArp(mode),
-      (STEPS * stepT - 0.6) * 1000
-    );
+    if (this._menuAudio) { this._menuAudio.pause(); this._menuAudio.currentTime = 0; }
+    if (this._gameAudio) { this._gameAudio.pause(); this._gameAudio.currentTime = 0; }
   },
 
   // ─── MUTE ───────────────────────────────────────────────────────────────────
@@ -181,9 +115,8 @@ const AudioManager = {
   toggleMute() {
     this._muted = !this._muted;
     try { localStorage.setItem(this._KEY, this._muted ? '1' : '0'); } catch(e) {}
-    if (this._muted) {
-      this._stopMusicNow();
-    }
+    if (this._menuAudio) this._menuAudio.muted = this._muted;
+    if (this._gameAudio) this._gameAudio.muted = this._muted;
     return this._muted;
   },
 

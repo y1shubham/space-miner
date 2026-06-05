@@ -15,7 +15,7 @@ class PowerUp extends createjs.Container {
 
     this.x = stageW * 0.15 + Math.random() * stageW * 0.7;
     this.y = -40;
-    this._vy   = 0.7 + Math.random() * 0.5;
+    this._vy   = 2.2 + Math.random() * 1.2;
     this._bob  = Math.random() * Math.PI * 2;
     this._baseX = this.x;
 
