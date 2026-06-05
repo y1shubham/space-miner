@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Space Miner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    #game-container {
+      width: 100%;
+      max-width: 500px;
+      height: 100vh;
+      position: relative;
+    }
+
+    canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="gameCanvas"></canvas>
+  </div>
+
+  <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+  <script src="scripts/utils/Constants.js"></script>
+  <script src="scripts/utils/Utils.js"></script>
+  <script src="scripts/utils/SaveManager.js"></script>
+  <script src="scripts/entities/Player.js"></script>
+  <script src="scripts/entities/Asteroid.js"></script>
+  <script src="scripts/entities/Resource.js"></script>
+  <script src="scripts/effects/FloatingText.js"></script>
+  <script src="scripts/effects/ParticleSystem.js"></script>
+  <script src="scripts/managers/AudioManager.js"></script>
+  <script src="scripts/managers/AsteroidManager.js"></script>
+  <script src="scripts/managers/ResourceManager.js"></script>
+  <script src="scripts/entities/PowerUp.js"></script>
+  <script src="scripts/managers/PowerUpManager.js"></script>
+  <script src="scripts/ui/HomeScreen.js"></script>
+  <script src="scripts/ui/GameScreen.js"></script>
+  <script src="scripts/main.js"></script>
+</body>
+</html>
