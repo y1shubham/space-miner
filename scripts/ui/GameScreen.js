@@ -694,7 +694,7 @@ class GameScreen extends createjs.Container {
     const barW = this._fs(90);
     const barH = this._fs(3);
     const cx   = this._w / 2;
-    const y    = 54;
+    const y    = this._fs(28) + this._fs(20) + this._fs(11);
 
     if (this._combo <= 1) {
       this._comboBarBg.graphics.clear();
