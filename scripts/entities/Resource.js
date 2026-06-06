@@ -45,7 +45,7 @@ class Resource extends createjs.Container {
         .beginRadialGradientFill(['#eef4ff', color, this._darken(color)], [0, 0.5, 1], -r*0.2,-r*0.3,0, 0,0,r)
         .drawPolyStar(0, 0, r, 6, 0, 0);
     } else {
-      // iron — rough hexagon
+      // iron - rough hexagon
       g.setStrokeStyle(1).beginStroke('#999999')
         .beginRadialGradientFill(['#dddddd', color, this._darken(color)], [0, 0.5, 1], -r*0.2,-r*0.3,0, 0,0,r)
         .drawPolyStar(0, 0, r, 6, 0, 30);

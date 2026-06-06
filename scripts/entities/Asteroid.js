@@ -65,21 +65,21 @@ class Asteroid extends createjs.Shape {
 
   _spawnOffscreen(speedMult) {
     const speed = (C.ASTEROID_BASE_SPEED + Utils.rand(0, 1.5)) * speedMult * this._sMult;
-    // 0=top, 1=right, 2=left  — never from bottom (player flies forward)
+    // 0=top, 1=right, 2=left - never from bottom (player flies forward)
     const side = Utils.randInt(0, 2);
     const angle = Utils.rand(-0.4, 0.4);
     if (side === 0) {
-      // top — come straight down with slight horizontal drift
+      // top - come straight down with slight horizontal drift
       this.x = Utils.rand(0, this._sw); this.y = -this.radius - 5;
       this.vx = Math.sin(angle) * speed;
       this.vy = Math.abs(Math.cos(angle) * speed);
     } else if (side === 1) {
-      // right — come in from right, biased downward
+      // right - come in from right, biased downward
       this.x = this._sw + this.radius + 5; this.y = Utils.rand(-this.radius, this._sh * 0.6);
       this.vx = -Math.abs(Math.cos(angle) * speed);
       this.vy = Math.abs(Math.sin(angle) * speed) + speed * 0.3;
     } else {
-      // left — come in from left, biased downward
+      // left - come in from left, biased downward
       this.x = -this.radius - 5; this.y = Utils.rand(-this.radius, this._sh * 0.6);
       this.vx = Math.abs(Math.cos(angle) * speed);
       this.vy = Math.abs(Math.sin(angle) * speed) + speed * 0.3;

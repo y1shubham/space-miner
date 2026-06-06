@@ -48,7 +48,7 @@ class GameScreen extends createjs.Container {
     this._worldContainer = new createjs.Container();
     this.addChild(this._worldContainer);
 
-    // scrolling parallax star layers — redrawn each frame for seamless wrap
+    // scrolling parallax star layers - redrawn each frame for seamless wrap
     this._starData = [];
     const cfg = [
       { count:80, size:[0.4,1.0], speed:0.8,  alpha:[0.3,0.6] },
@@ -281,7 +281,7 @@ class GameScreen extends createjs.Container {
 
     this._drawHealthBar(100);
 
-    // score — centered, same row
+    // score - centered, same row
     this._scoreTxt = new createjs.Text('0', `700 ${this._fs(24)}px Inter, sans-serif`, '#ffffff');
     this._scoreTxt.textAlign    = 'center';
     this._scoreTxt.textBaseline = 'middle';
@@ -289,14 +289,14 @@ class GameScreen extends createjs.Container {
     this._scoreTxt.y = hudY;
     this._hud.addChild(this._scoreTxt);
 
-    // combo text — below score
+    // combo text - below score
     this._comboTxt = new createjs.Text('', `600 ${this._fs(13)}px Inter, sans-serif`, '#ffcc00');
     this._comboTxt.textAlign = 'center';
     this._comboTxt.x = this._w / 2;
     this._comboTxt.y = hudY + this._fs(20);
     this._hud.addChild(this._comboTxt);
 
-    // level badge — same row as score/health/pause
+    // level badge - same row as score/health/pause
     this._levelTxt = new createjs.Text('LVL 1', `600 ${this._fs(11)}px Inter, sans-serif`, '#4488aa');
     this._levelTxt.textAlign    = 'right';
     this._levelTxt.textBaseline = 'middle';
@@ -534,7 +534,7 @@ class GameScreen extends createjs.Container {
     };
   }
 
-  // pause button center is at (this._w - 22, 18) — give it a generous 56x56 touch zone
+  // pause button center is at (this._w - 22, 18) - give it a generous 56x56 touch zone
   _isPauseArea(pt) {
     return pt.x > this._w - 64 && pt.y < this._fs(64);
   }
