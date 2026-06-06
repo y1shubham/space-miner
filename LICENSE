@@ -11,18 +11,41 @@ Unauthorized use is strictly prohibited and may result in legal action.
 
 ---
 
-THIRD-PARTY ASSETS
+THIRD-PARTY ASSETS & LIBRARIES
 
-The background music tracks used in this project are NOT owned by Shubham Yadav
-and are NOT covered by the license above.
+The following third-party assets and libraries are used in this project.
+Shubham Yadav makes no ownership claim over these works. All rights remain
+with their respective authors. They are used in accordance with their
+individual license terms. This notice applies to this project and all other
+products by Shubham Yadav that use the same dependencies.
 
-  "Infinite Perspective" by Kevin MacLeod
-  "Odyssey" by Kevin MacLeod
+──────────────────────────────────────────────────────────────────────────────
 
-  Licensed under Creative Commons Attribution 4.0 International (CC BY 4.0)
-  https://creativecommons.org/licenses/by/4.0/
-  Source: https://incompetech.com
+1. BACKGROUND MUSIC
 
-These tracks are used in accordance with their respective license terms. All
-rights to these works remain with their original authors. This notice applies
-to this project and all other products by Shubham Yadav that use the same tracks.
+   "Infinite Perspective" by Kevin MacLeod
+   "Odyssey" by Kevin MacLeod
+
+   Licensed under Creative Commons Attribution 4.0 International (CC BY 4.0)
+   https://creativecommons.org/licenses/by/4.0/
+   Source: https://incompetech.com
+
+──────────────────────────────────────────────────────────────────────────────
+
+2. CREATEJS (EaselJS, TweenJS, SoundJS, PreloadJS)
+
+   Copyright (c) gskinner.com, inc.
+   Licensed under the MIT License
+   https://github.com/CreateJS/EaselJS/blob/master/LICENSE.md
+   Source: https://createjs.com
+
+──────────────────────────────────────────────────────────────────────────────
+
+3. INTER TYPEFACE
+
+   Copyright (c) Rasmus Andersson
+   Licensed under the SIL Open Font License 1.1
+   https://scripts.sil.org/OFL
+   Source: https://fonts.google.com/specimen/Inter
+
+──────────────────────────────────────────────────────────────────────────────
